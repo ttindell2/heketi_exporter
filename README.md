@@ -5,7 +5,7 @@ Heketi exporter for Prometheus
 
 ```
 go get github.com/ttindell2/heketi_exporter
-./gluster_exporter
+./heketi_exporter
 ```
 
 ## Usage of `heketi_exporter`
