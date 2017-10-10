@@ -1,6 +1,10 @@
 # heketi_exporter
 Heketi exporter for Prometheus. Currently only authenticated Heketi servers are supported.
 
+The purpose of this exporter was to get the metrics of a Heketi Controlled Gluster Cluster for Openshift Container Native Storage.
+
+A very simple Openshift Template is included to deploy this exporter into a project. This exporter should be deployed into the same project as Prometheus.
+
 ## Installation
 
 ```
@@ -43,3 +47,12 @@ Using the Heketi Go Client to call topology info on authenticated heketi will re
 | device_free                                        | Free space of each device mounted to each node in each cluster |
 | device_used                                        | Used space of each device mounted to each node in each cluster |
 | brick_count                                        | Amount of bricks on each device mounted to each node in each cluster |
+
+
+### Building Locally
+
+Make sure you have make installed and docker installed.
+
+```
+make docker
+```
