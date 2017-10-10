@@ -56,3 +56,9 @@ Make sure you have make installed and docker installed.
 ```
 make docker
 ```
+
+## Docker
+
+The docker image has been posted on Docker Hub:
+
+https://hub.docker.com/r/timtindell/heketi_exporter
