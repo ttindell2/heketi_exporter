@@ -65,8 +65,8 @@ var (
 		"How many Devices were up at the last query.",
 		[]string{"cluster","hostname", "device"}, nil,
 	)
-	deviceAvail = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace, "", "device_avail"),
+	deviceUsed = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "device_used"),
 		"How many Devices were up at the last query.",
 		[]string{"cluster","hostname", "device"}, nil,
 	)
@@ -91,7 +91,7 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- deviceCount // done
 	ch <- deviceSize // done
 	ch <- deviceFree // done
-	ch <- deviceAvail // done
+	ch <- deviceUsed // done
 	ch <- brickCount // done
 
 }
@@ -100,7 +100,6 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	// Collect metrics from volume info
 	topinfo, err := TopInfo()
-	//TopologyInfo()
 	// Couldn't parse xml, so something is really wrong and up=0
 	if err != nil {
 		log.Errorf("couldn't get topology info: %v", err)
@@ -116,20 +115,23 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 		clusterCount, prometheus.GaugeValue, float64(len(topinfo.ClusterList)),
 	)
 	for _, cluster := range topinfo.ClusterList {
-		ch <- prometheus.MustNewConstMetric(
+		log.Info("ClusterID: ", cluster.Id)
+                ch <- prometheus.MustNewConstMetric(
 			volumesCount, prometheus.GaugeValue, float64(len(cluster.Volumes)),cluster.Id,
 		)
 		ch <- prometheus.MustNewConstMetric(
-			volumesCount, prometheus.GaugeValue, float64(len(cluster.Nodes)),cluster.Id,
+		        nodesCount, prometheus.GaugeValue, float64(len(cluster.Nodes)),cluster.Id,
 		)
 	//	for _, volumes := range cluster.Volumes {
 	//			// Not Using for now
 	//	}
 		for _, nodes := range cluster.Nodes {
+                        log.Info("NodeHost: ",nodes.Hostnames.Manage[0])
 			ch <- prometheus.MustNewConstMetric(
 				deviceCount, prometheus.GaugeValue, float64(len(nodes.DevicesInfo)),cluster.Id,nodes.Hostnames.Manage[0],
 			)
 			for _, device := range nodes.DevicesInfo {
+                                log.Info("Device: ", device.Name)
 				ch <- prometheus.MustNewConstMetric(
 					deviceSize, prometheus.GaugeValue, float64(device.Storage.Total),cluster.Id,nodes.Hostnames.Manage[0], device.Name,
 				)
@@ -137,15 +139,15 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 					deviceFree, prometheus.GaugeValue, float64(device.Storage.Free),cluster.Id,nodes.Hostnames.Manage[0], device.Name,
 				)
 				ch <- prometheus.MustNewConstMetric(
-					deviceAvail, prometheus.GaugeValue, float64(device.Storage.Used),cluster.Id,nodes.Hostnames.Manage[0], device.Name,
+					deviceUsed, prometheus.GaugeValue, float64(device.Storage.Used),cluster.Id,nodes.Hostnames.Manage[0], device.Name,
 				)
 				ch <- prometheus.MustNewConstMetric(
-					deviceAvail, prometheus.GaugeValue, float64(len(device.Bricks)),cluster.Id,nodes.Hostnames.Manage[0], device.Name,
+					brickCount, prometheus.GaugeValue, float64(len(device.Bricks)),cluster.Id,nodes.Hostnames.Manage[0], device.Name,
 				)
 			}
 		}
 	}
-	log.Info(topinfo)
+   log.Info("Finished collecting metrics")
 }
 
 // NewExporter initialises exporter
