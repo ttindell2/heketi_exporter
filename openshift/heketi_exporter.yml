@@ -5,30 +5,36 @@ items:
 - kind: Service
   apiVersion: v1
   metadata:
-    name: heketi-exporter
     annotations:
-      description: The heketi Exporter port
+      prometheus.io/scrape: "true"
+    labels:
+      app: heketi-exporter
+    name: heketi-exporter
   spec:
+    clusterIP: None
     ports:
     - name: scrape
       port: 9189
+      protocol: TCP
       targetPort: 9189
     selector:
-      name: heketi-exporter
+      app: heketi-exporter
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
     name: heketi-exporter
     labels:
-    app: heketi-exporter
+      app: heketi-exporter
+      role: monitoring
   spec:
     replicas: 1
     selector:
-      name: heketi-exporter
+      app: heketi-exporter
     template:
       metadata:
         labels:
-          name: heketi-exporter
+          app: heketi-exporter
+          role: monitoring
       spec:
         containers:
           - name: heketi-exporter
@@ -43,7 +49,7 @@ items:
               value: "<CHANGE ME>"
             ports:
               - containerPort: 9189
-                protocol: TCP
+                name: scrape
             resources:
               requests:
                 cpu: 10m
