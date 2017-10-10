@@ -11,7 +11,7 @@ import (
 func TopInfo() (*api.TopologyInfoResponse, error) {
 	log.Info("Heketi CLI Server: ", os.Getenv("HEKETI_CLI_SERVER"))
 	log.Info("Heketi User: ", os.Getenv("HEKETI_CLI_USER"))
-	log.Info("Heketi Key: ", os.Getenv("HEKETI_CLI_KEY"))
+	log.Info("Heketi Key: <REDACTED>")
 
 	// Create a client to talk to Heketi
 	heketi := client.NewClient(os.Getenv("HEKETI_CLI_SERVER"), os.Getenv("HEKETI_CLI_USER"), os.Getenv("HEKETI_CLI_KEY"))
