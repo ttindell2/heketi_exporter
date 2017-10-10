@@ -1,5 +1,5 @@
 # heketi_exporter
-Heketi exporter for Prometheus
+Heketi exporter for Prometheus. Currently only authenticated Heketi servers are supported.
 
 ## Installation
 
@@ -22,15 +22,24 @@ Help is displayed with `-h`.
 
 
 ## Env Variables to Set:
+Using the Heketi Go Client to call topology info on authenticated heketi will require these environment variables to be set:
 
-HEKETI_CLI_SERVER
-HEKETI_CLI_USER
-HEKETI_CLI_KEY
+* HEKETI_CLI_SERVER: The Heketi Server (eg. http://localhost:8080)
 
-### Command: `heketi topology info`
+* HEKETI_CLI_USER: The User should always be 'admin'
 
-| Name                                               | type     | impl. state |
-| -------------------------------------------------- | -------- | ------------|
+* HEKETI_CLI_KEY: The Secret key of the Heketi Admin user.
 
-#TODO
+### Metrics in prometheus
 
+| Name                                               | Description                             |
+| -------------------------------------------------- | ----------------------------------------|
+| up                                                 | Was the last query of Heketi successful |
+| cluster_count                                      | Amount of gluster Clusters heketi is controlling |
+| volume_count                                       | Amount of volumes in each cluster       |
+| node_count                                         | Amount of nodes in each cluster         |
+| device_count                                       | Amount of devices mounted to each node in each cluster |
+| device_size                                        | Size of each device mounted to each node in each cluster |
+| device_free                                        | Free space of each device mounted to each node in each cluster |
+| device_used                                        | Used space of each device mounted to each node in each cluster |
+| brick_count                                        | Amount of bricks on each device mounted to each node in each cluster |
