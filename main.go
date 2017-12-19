@@ -1,17 +1,5 @@
-// Copyright 2015 Oliver Fesseler
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for 	the specific language governing permissions and
-// limitations under the License.
-
-// heketi exporter, exports metrics using Heketi Go Client
+// heketi-metrics-exporter, exports metrics using Heketi Go Client
+// based directly on https://github.com/ttindell2/heketi_exporter
 package main
 
 import (
@@ -76,6 +64,14 @@ var (
 		[]string{"cluster","hostname", "device"}, nil,
 	)
 )
+
+// Helper to have a getEnv with a fallback value
+func getEnv(key, fallback string) string {
+    if value, ok := os.LookupEnv(key); ok {
+        return value
+    }
+    return fallback
+}
 
 // Exporter holds name, path and volumes to be monitored
 type Exporter struct {
@@ -168,10 +164,15 @@ func init() {
 
 func main() {
 
-	// commandline arguments
+	// commandline arguments and environment variables
 	var (
 		metricPath    = flag.String("metrics-path", "/metrics", "URL Endpoint for metrics")
-		listenAddress = flag.String("listen-address", ":9189", "The address to listen on for HTTP requests.")
+    // listen address precedence: command line, environment, default
+		listenAddress = flag.String(
+		  "listen-address", 
+		  getEnv("LISTEN_ADDRESS", ":9189"),
+		  "The address to listen on for HTTP requests. Can be also set with LISTEN_ADDRESS env var",
+		)
 		showVersion   = flag.Bool("version", false, "Prints version information")
 	)
 	flag.Parse()
@@ -190,14 +191,14 @@ func main() {
 	}
 	prometheus.MustRegister(exporter)
 
-	log.Info("Heketi Metrics Exporter v", version.Version)
+	log.Info("Heketi Metrics Exporter v", version.Version, " listening on ", *listenAddress)
 
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`<html>
-			<head><title>heketiFS Exporter v` + version.Version + `</title></head>
+			<head><title>Heketi Metrics Exporter v` + version.Version + `</title></head>
 			<body>
-			<h1>heketiFS Exporter v` + version.Version + `</h1>
+			<h1>Heketi Metrics Exporter v` + version.Version + `</h1>
 			<p><a href='` + *metricPath + `'>Metrics</a></p>
 			</body>
 			</html>
@@ -205,3 +206,4 @@ func main() {
 	})
 	log.Fatal(http.ListenAndServe(*listenAddress, nil))
 }
+
