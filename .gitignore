@@ -1,1 +1,8 @@
-heketi_exporter
+# Binary
+heketi-metrics-exporter
+
+# JetBrains IDEs
+.idea
+
+# Vim swap file
+*.swp

@@ -1,20 +1,14 @@
-# heketi_exporter
+# Heketi Metrics Exporter
+
+**NOTE: Directly based on https://github.com/ttindell2/heketi_exporter**
+
 Heketi exporter for Prometheus. Currently only authenticated Heketi servers are supported.
 
 The purpose of this exporter was to get the metrics of a Heketi Controlled Gluster Cluster for Openshift Container Native Storage.
 
-A very simple Openshift Template is included to deploy this exporter into a project. This exporter should be deployed into the same project as Prometheus.
+## Usage of `heketi-metrics-exporter`
 
-## Installation
-
-```
-go get github.com/ttindell2/heketi_exporter
-./heketi_exporter
-```
-
-## Usage of `heketi_exporter`
 Help is displayed with `-h`.
-
 | Option                   | Default             | Description
 | ------------------------ | ------------------- | -----------------
 | -help                    | -                   | Displays usage.
@@ -25,7 +19,9 @@ Help is displayed with `-h`.
 | -version                 | -                   | Prints version information
 
 
-## Env Variables to Set:
+## Env Variables
+
+### Mandatory
 Using the Heketi Go Client to call topology info on authenticated heketi will require these environment variables to be set:
 
 * HEKETI_CLI_SERVER: The Heketi Server (eg. http://localhost:8080)
@@ -33,6 +29,11 @@ Using the Heketi Go Client to call topology info on authenticated heketi will re
 * HEKETI_CLI_USER: The User should always be 'admin'
 
 * HEKETI_CLI_KEY: The Secret key of the Heketi Admin user.
+
+### Optional environment
+
+* LISTEN_ADDRESS: The address to listen on for HTTP requests
+
 
 ### Metrics in prometheus
 
@@ -56,9 +57,3 @@ Make sure you have make installed and docker installed.
 ```
 make docker
 ```
-
-## Docker
-
-The docker image has been posted on Docker Hub:
-
-https://hub.docker.com/r/timtindell/heketi_exporter

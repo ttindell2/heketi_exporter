@@ -13,7 +13,7 @@ build:
 	go get -u "github.com/prometheus/common/version"
 	go get -u "github.com/heketi/heketi/client/api/go-client"
 	go get -u "github.com/heketi/heketi/pkg/glusterfs/api"
-	$(GO) build -o heketi_exporter
+	$(GO) build -o heketi-metrics-exporter
 
 docker: build
-	docker build -t heketi_exporter .
+	docker build -t heketi-metrics-exporter .
